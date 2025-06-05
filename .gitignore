@@ -1,0 +1,21 @@
+# Python cache
+_pycache__
+*.py[cod]
+
+# PyCharm/Jupyter
+.idea
+.ipynb_checkpoints
+
+# build artifacts
+*.egg-info
+/docs/build/
+dist
+
+
+/src/pixel3dmm/preprocessing/facer/
+/src/pixel3dmm/preprocessing/MICA/
+/src/pixel3dmm/preprocessing/PIPNet/
+/pretrained_weights/
+/assets/
+
+*.mp4

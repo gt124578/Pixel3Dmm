@@ -1,0 +1,110 @@
+config_name : test
+
+batch_size : 16
+num_views : 1
+size : 256
+image_size : [256, 256] # use this instead hardcoding a bunch of 512 and 256
+
+data_folder : none
+p3dmm_folder : none
+
+extra_cam_steps : False
+big_normal_mask : False
+
+start_frame : 0
+
+num_shape_params : 300
+num_exp_params : 100
+tex_params : 140
+iters : 200 #800 #400
+
+no_lm : False
+use_eyebrows : False
+use_mouth_lmk : True
+no_pho : True
+no_sh : True
+disable_edge : False
+
+keyframes : []
+
+ignore_mica : False
+flame2023 : False
+
+uv_map_super : 2000.0 #500.0 #100 #2001.0 #5000.0 #2000.0
+normal_super : 1000.0 #202.0
+normal_super_can : 0.0
+sil_super : 500
+
+
+uv_loss:
+  stricter_uv_mask : False
+  delta_uv : 0.00005 #0.00005 #0.0005 #0.00005
+  delta_uv_fine : 0.00005 #0.00005 #0.0005 #0.00005
+  dist_uv : 20 #20 #15
+  dist_uv_fine : 20 #35 #20 #15
+
+
+occ_filter : True
+
+
+lr_id : 0.002 #0.003 #0.006 #0.003
+lr_exp : 0.005 # 0.005 #0.01 #0.01 #0.005
+lr_jaw : 0.005 #0.003
+lr_neck : 0.001 #0.0005
+lr_R : 0.005 #0.005 #0.002 #0.01# 0.0001
+lr_t : 0.001 #0.002 #0.001 #0.0005 #0.0005
+lr_f : 0.1 #0.05 #0.01 #0.001
+lr_pp : 0.00005
+
+w_pho : 150
+w_lmks : 3000
+w_lmks_mouth : 1000
+w_lmks_68 : 1000
+w_lmks_lid : 1000
+w_lmks_iris : 1000
+w_lmks_oval : 2000
+w_lmks_star : 0
+
+include_neck : True
+
+w_shape :  0.2
+w_shape_general : 0.05
+w_exp : 0.05
+w_jaw : 0.01
+w_neck : 0.1
+
+n_fine : False
+low_overhead : False
+
+delta_n : 0.33
+
+global_camera : True
+global_iters : 5000
+
+reg_smooth_exp : 50.0
+reg_smooth_eyes : 10.0
+reg_smooth_eyelids : 2.0
+reg_smooth_jaw : 50.0
+reg_smooth_neck : 1000.0
+reg_smooth_R : 2000.0
+reg_smooth_t : 15200.0
+reg_smooth_pp : 420.0
+reg_smooth_fl : 420.0
+
+reg_smooth_mult : 1.0
+
+uv_l2 : True
+normal_l2 : False
+smooth : True
+normal_mask_ksize : 13
+
+early_stopping_delta : 5.0
+
+early_exit : False
+
+draw_uv_corresp : False
+
+save_landmarks : False
+
+save_meshes : True
+delete_preprocessing : False
