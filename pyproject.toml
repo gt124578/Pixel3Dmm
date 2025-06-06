@@ -10,8 +10,8 @@ authors = [
     { name = "Simon Giebenhain", email = "simon.giebenhain@tum.de" },
 ]
 readme = "README.md"
-license = { text = "Apache 2.0" }
-requires-python = ">=3.8.0"
+license = { text = "CC BY-NC 4.0" }
+requires-python = ">=3.9.0"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
