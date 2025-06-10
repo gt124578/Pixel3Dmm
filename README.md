@@ -95,7 +95,6 @@ python scripts/run_preprocessing.py --video_or_images_path $PATH_TO_VIDEO
 which will perform cropping, facial landmark detection and segmentation and exectute MICA.
 Here, `PATH_TO_VIDEO` can either point to an `.mp4` file, or to a folder with images.
 
-> *Note*: You can also run single-image FLAME fitting when providing `.jpg` or `.png` files instead of `.mp4`
 
 ### 2.2 Pixel3DMM Inference
 Next run normal and uv-map prediction
@@ -123,7 +122,19 @@ python scripts/track.py video_name=$VID_NAME
 > *Note*: It is possible to trade-off fitting fidelity against speed: 
 > - increasing `early_stopping_delta` will speed up the online tracking phase, as it controls at what rate of loss-change to skip to the next frame.
 > - `global_iters` controls the number of iteration of the global optimization stage.
-### 2.4 Visualizations
+
+
+### 2.4 Single-Image Inference
+
+You can also run single-image FLAME fitting when providing `.jpg` or `.png` files instead of `.mp4`. 
+It is suggested to use a higher value for `iters`, e.g. by calling
+```
+python scripts/track.py video_name=$VID_NAME iters=800
+```
+This is necessary since video tracking consists of two stages, the *online* and *joint* tracking stages. For single image fitting the *joint* stage is skipped.
+
+
+### 2.5 Visualizations
 
 For convenience we provide a script that shows how to correctly interpret the estimated camera paramteres in relation to the FLAME mesh.
 Running
@@ -131,7 +142,7 @@ Running
 python scripts/viz_head_centric_cameras.py 
 ````
 
-### 2.5 Example Inference
+### 2.6 Example Inference
 You can run our tracker on example videos, by following the steps described in [2. Face Tracking](#2-face-tracking), and setting `PATH_TO_VIDEO="/path/to/this/repo/example_videos/ex1.mp4`.
 
 
