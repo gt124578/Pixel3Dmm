@@ -17,13 +17,13 @@ from pixel3dmm import env_paths
 
 
 
-
 def run(exp_path, image_dir, start_frame = 0,
         vertical_crop : bool = False,
         static_crop : bool = False,
         max_bbox : bool = False,
         disable_cropping : bool = False,
         ):
+
     experiment_name = exp_path.split('/')[-1][:-3]
     data_name = exp_path.split('/')[-2]
     config_path = '.experiments.{}.{}'.format(data_name, experiment_name)
@@ -37,12 +37,10 @@ def run(exp_path, image_dir, start_frame = 0,
     save_dir = os.path.join(f'{env_paths.CODE_BASE}/src/pixel3dmm/preprocessing/PIPNet/snapshots', cfg.data_name, cfg.experiment_name)
 
 
-
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
     preprocess = transforms.Compose(
         [transforms.Resize((cfg.input_size, cfg.input_size)), transforms.ToTensor(), normalize])
-
 
     #for pid in pids:
     pid = "FaMoS_180424_03335_TA_selfie_IMG_0092.jpg"
@@ -82,19 +80,11 @@ def unpack_images(base_path, video_or_images_path):
 def main(video_or_images_path : str,
          max_bbox : bool = True, # not used
          disable_cropping : bool = False):
-    if os.path.isdir(video_or_images_path):
-        video_name = video_or_images_path.split('/')[-1]
-    else:
-        video_name = video_or_images_path.split('/')[-1][:-4]
-
-    base_path = f'{env_paths.PREPROCESSED_DATA}/{video_name}/rgb/'
+    basename = os.path.basename(video_or_images_path)
+    video_name, _ = os.path.splitext(basename)
+    base_path = os.path.join(env_paths.PREPROCESSED_DATA, video_name, 'rgb')
 
     unpack_images(base_path, video_or_images_path)
-
-    if os.path.exists(f'{env_paths.PREPROCESSED_DATA}/{video_name}/cropped/'):
-        if len(os.listdir(base_path)) == len(os.listdir(f'{env_paths.PREPROCESSED_DATA}/{video_name}/cropped/')):
-            return
-
 
     start_frame = -1
     run('experiments/WFLW/pip_32_16_60_r18_l2_l1_10_1_nb10.py', base_path, start_frame=start_frame, vertical_crop=False,
