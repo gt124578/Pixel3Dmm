@@ -16,7 +16,7 @@ start_frame : 0
 num_shape_params : 300
 num_exp_params : 100
 tex_params : 140
-iters : 200 #800 #400 # Number if iterations in first stage of tracking. For single-image fitting, you might want to choose a larger value, e.g. 500 or 800
+iters : 800 #400 # Number if iterations in first stage of tracking. For single-image fitting, you might want to choose a larger value, e.g. 500 or 800
 global_iters : 5000 # Number f iterations for second stage of tracking (video only)
 
 
@@ -106,7 +106,7 @@ early_stopping_delta : 5.0 # a higher value will make stage 1 tracking faster bu
 
 early_exit : False
 
-draw_uv_corresp : False # add additional visualizations to result.mp4, e.g. uv-loss and normal loss map
+draw_uv_corresp : True # add additional visualizations to result.mp4, e.g. uv-loss and normal loss map
 
 save_landmarks : False
 
