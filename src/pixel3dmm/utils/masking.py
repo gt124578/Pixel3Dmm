@@ -15,6 +15,8 @@
 # Contact: mica@tue.mpg.de
 
 import os
+from pixel3dmm import env_paths
+
 import pickle
 
 import numpy as np
@@ -46,13 +48,14 @@ class Struct(object):
 class Masking(nn.Module):
     def __init__(self):
 
-        dir = f'{env_paths.FLAME_ASSETS}'
+        dir = f'{env_paths.FLAME_MASK_ASSET}'
         super(Masking, self).__init__()
         with open(f'{dir}/FLAME2020/FLAME_masks/FLAME_masks.pkl', 'rb') as f:
             ss = pickle.load(f, encoding='latin1')
             self.masks = Struct(**ss)
 
-        with open(f'{dir}/FLAME2020/generic_model.pkl', 'rb') as f:
+
+        with open(f'{env_paths.FLAME_ASSET}', 'rb') as f:
             ss = pickle.load(f, encoding='latin1')
             flame_model = Struct(**ss)
 
