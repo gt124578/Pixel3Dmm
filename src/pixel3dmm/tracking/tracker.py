@@ -128,9 +128,13 @@ if COMPILE:
 
 
 class Tracker(object):
-    def __init__(self, config,
+    def __init__(self, config, flame_module, renderer,
                  device='cuda:0',
                  ):
+        self.config = config
+        self.flame = flame_module
+        self.diff_renderer = renderer
+    
         self.config = config
         self.device = device
         self.actor_name = self.config.video_name
@@ -197,7 +201,7 @@ class Tracker(object):
             self.save_folder = env_paths.TRACKING_OUTPUT
         self.output_folder = os.path.join(self.save_folder, self.actor_name)
         self.checkpoint_folder = os.path.join(self.save_folder, self.actor_name, "checkpoint")
-        self.mesh_folder = os.path.join(self.save_folder, self.actor_name, "mesh")
+        self.mesh_folder = os.path.join(self.save_folder, self.config.video_name, "mesh")
         self.create_output_folders()
         self.writer = SummaryWriter(log_dir=self.save_folder + self.actor_name + '/logs')
 
@@ -205,7 +209,7 @@ class Tracker(object):
         self.R_base = {}
         self.t_base = {}
 
-        flame_mesh_mask = np.load(f'{env_paths.FLAME_ASSETS}/FLAME2020/FLAME_masks/FLAME_masks.pkl', allow_pickle=True, encoding='latin1')
+        flame_mesh_mask = np.load(f'{env_paths.FLAME_MASK_ASSET}/FLAME2020/FLAME_masks/FLAME_masks.pkl', allow_pickle=True, encoding='latin1')
         self.vertex_face_mask = torch.from_numpy(flame_mesh_mask['face']).cuda().long()
 
 
@@ -240,7 +244,6 @@ class Tracker(object):
     def setup_renderer(self):
         mesh_file = f'{env_paths.head_template}'
         self.config.image_size = self.get_image_size()
-        self.flame = FLAME(self.config).to(self.device)
         self.flame.vertex_face_mask = self.vertex_face_mask
 
 
@@ -251,11 +254,7 @@ class Tracker(object):
             self.actual_smooth = torch.compile(self.actual_smooth)
 
 
-        self.diff_renderer = NVDRenderer(self.config.size,
-                                         obj_filename=mesh_file,
-                                         no_sh=self.no_sh,
-                                         white_bg= True,
-                                         ).to(self.device)
+        self.renderer = self.diff_renderer  # already global
 
 
         self.faces = load_obj(mesh_file)[1]
@@ -344,7 +343,7 @@ class Tracker(object):
             v = vertices[b_i].cpu().numpy()
 
             if self.config.save_meshes:
-                trimesh.Trimesh(faces=f, vertices=v, process=False).export(f'{self.mesh_folder}/{frame_id:05d}.ply')
+                trimesh.Trimesh(faces=f, vertices=v, process=False).export(f'{self.mesh_folder}/{frame_id:05d}.glb')
             torch.save(frame, f'{self.checkpoint_folder}/{frame_id:05d}.frame')
 
             selction_indx = np.array([36, 39, 42, 45, 33, 48, 54])
@@ -357,12 +356,12 @@ class Tracker(object):
 
         if frame_id == self.config.start_frame and self.config.save_meshes:
             faces = self.diff_renderer.faces[0].cpu().numpy()
-            trimesh.Trimesh(faces=faces, vertices=vertices_can[0].detach().cpu().numpy(), process=False).export(f'{self.mesh_folder}/canonical.ply')
+            trimesh.Trimesh(faces=faces, vertices=vertices_can[0].detach().cpu().numpy(), process=False).export(f'{self.mesh_folder}/canonical.glb')
         if self.config.save_landmarks:
             lmks = lmks.detach().squeeze().cpu().numpy()
-            np.save(f'{self.mesh_folder}/ibug68_{frame_id}.ply', lmks)
+            np.save(f'{self.mesh_folder}/ibug68_{frame_id}.glb', lmks)
             selction_indx = np.array([36, 39, 42, 45, 33, 48, 54])
-            np.save(f'{self.mesh_folder}/now_{frame_id}.ply', lmks[selction_indx])
+            np.save(f'{self.mesh_folder}/now_{frame_id}.glb', lmks[selction_indx])
 
 
 
@@ -1279,6 +1278,47 @@ class Tracker(object):
                                      verts_depth=proj_vertices[:, :, 2:3],
                                      is_viz=True
                                      )
+            # if they asked *only* for the pure shape mask:
+            if visualizations == [[View.SHAPE]]:
+                # build your normal‐map preview as before
+                normals = ops['normal_images'][0].cpu().numpy()     # [3,H,W]
+                normals = (normals + 1.0) / 2.0                      # → [0,1]
+                normals = np.transpose(normals, (1,2,0))            # H×W×3
+                arr = (normals * 255).clip(0,255).astype(np.uint8)
+
+                # --- export the posed mesh, using the correct face indices field ---
+                os.makedirs(self.mesh_folder, exist_ok=True)
+                frame_id = str(0).zfill(5)
+                ply_path = os.path.join(self.mesh_folder, f"{frame_id}.glb")
+
+                # pull out the face index tensor
+                faces_np = self.faces.verts_idx.cpu().numpy()
+                # `vertices` is your posed mesh: shape (1, V, 3)
+                verts_np  = vertices[0].detach().cpu().numpy()
+
+                # 1) build your mesh (this will compute smooth normals automatically)
+                mesh = trimesh.Trimesh(vertices=verts_np, faces=faces_np)
+
+                # 2) fetch those normals: shape is (V,3), each component in [-1,1]
+                normals = mesh.vertex_normals  # (V,3) numpy array
+
+                # 3) convert them to RGB in [0,255]: 
+                #    (n+1)/2 maps [-1,1]→[0,1], then *255→[0,255]
+                colors = ((normals + 1.0) * 0.5 * 255.0).astype(np.uint8)  # (V,3)
+
+                # 4) you need RGBA for many formats—just set alpha=255
+                alpha = np.full((colors.shape[0],1), 255, dtype=np.uint8)
+                vertex_colors = np.hstack([colors, alpha])               # (V,4)
+
+                # 5) assign those as your mesh’s visual colors
+                mesh.visual.vertex_colors = vertex_colors
+
+                # 6) export—PLY or GLB both support vertex colors
+                out_path = os.path.join(self.mesh_folder, f"{frame_id}.glb")
+                mesh.export(out_path)
+
+            return arr
+
             mask = (self.parse_mask(ops, batch, visualization=True) > 0).float()
             grabbed_depth = ops['actual_rendered_depth'][0, 0,
             torch.clamp(proj_vertices[0, :, 1].long(), 0, self.config.size-1),
@@ -1288,49 +1328,6 @@ class Tracker(object):
             if not self.config.occ_filter:
                 is_visible_verts_idx = torch.ones_like(is_visible_verts_idx)
 
-
-            all_final_views = []
-            for b_i in range(bs):
-                final_views = []
-
-                for views in visualizations:
-                    row = []
-                    for view in views:
-                        if view == View.COLOR_OVERLAY:
-                            row.append((ops['normal_images'][b_i].cpu().numpy() + 1)/2)
-                        if view == View.GROUND_TRUTH:
-                            row.append(images[b_i].cpu().numpy())
-                        if (view == View.LANDMARKS and not self.no_lm) or is_camera:
-                            gt_lmks = images[b_i:b_i+1].clone()
-                            gt_lmks = util.tensor_vis_landmarks(gt_lmks, landmarks[b_i:b_i+1, :, :], color='g')
-                            gt_lmks = util.tensor_vis_landmarks(gt_lmks, batch['left_iris'][b_i:b_i+1, ...], color='g')
-                            gt_lmks = util.tensor_vis_landmarks(gt_lmks, batch['right_iris'][b_i:b_i+1, ...], color='g')
-                            gt_lmks = util.tensor_vis_landmarks(gt_lmks, proj_vertices[b_i:b_i+1, left_iris_flame, ...], color='r')
-                            gt_lmks = util.tensor_vis_landmarks(gt_lmks, proj_vertices[b_i:b_i+1, right_iris_flame, ...], color='r')
-                            gt_lmks = util.tensor_vis_landmarks(gt_lmks, lmk68[b_i:b_i+1, :, :], color='r')
-                            row.append(gt_lmks[0].cpu().numpy())
-
-                    if True:
-                        nvd_mask = gaussian_blur(ops['mask_images_rendering'].detach(),
-                                                 kernel_size=[self.config.normal_mask_ksize, self.config.normal_mask_ksize],
-                                                 sigma=[self.config.normal_mask_ksize, self.config.normal_mask_ksize])
-                        nvd_mask = (nvd_mask > 0.5).float()
-                        nvd_mask_clone = nvd_mask.clone()
-
-
-                        eyebrow_level = torch.min(lmk68[:, :, 1], dim=1).indices
-
-                        for _i in range(eyebrow_level.shape[0]):
-                            nvd_mask_clone[_i, :, :eyebrow_level[_i], :] = 0
-
-
-                    final_views.append(row)
-
-
-                # VIDEO
-                final_views = util.merge_views(final_views)
-                all_final_views.append(final_views)
-            final_views = np.concatenate(all_final_views, axis=0)
 
             if outer_iter is None:
                 frame_id = str(self.frame).zfill(5)
@@ -1714,13 +1711,26 @@ class Tracker(object):
             batches = {k: torch.cat([x[k] for x in batches], dim=0) for k in batch.keys()}
             selected_frames = torch.from_numpy(np.array(selected_frames)).long().cuda()
 
-            result_rendering = self.render_and_save(batches, visualizations=[[View.GROUND_TRUTH, View.COLOR_OVERLAY, View.LANDMARKS, View.SHAPE]],
-                                                    frame_dst='/joint_initialization', outer_iter=0, timestep=timestep, is_final=True, selected_frames=selected_frames)
+            result_rendering = self.render_and_save(batch,
+                                                    visualizations=[[View.SHAPE]],   # ← only mesh by default
+                                                    frame_dst='/video', save=True, dump_directly=False, outer_iter=0, timestep=timestep, is_final=True, selected_frames=selected_frames)
             video_frames.append(np.array(result_rendering))
             self.frame += 1
 
-        mediapy.write_video(f'{self.save_folder}/{self.actor_name}/result.mp4', images=video_frames, crf=15, fps=25)
+        out_dir = f"{self.save_folder}/{self.config.video_name}/frames"
+        os.makedirs(out_dir, exist_ok=True)
 
+        for i, frame in enumerate(video_frames):
+            # If float in [0,1], convert:
+            if frame.dtype != np.uint8:
+                frame_uint8 = (frame * 255).astype(np.uint8)
+            else:
+                frame_uint8 = frame
+            # OpenCV expects BGR ordering:
+            bgr = cv2.cvtColor(frame_uint8, cv2.COLOR_RGB2BGR)
+            cv2.imwrite(os.path.join(out_dir, f"{i:05d}.jpg"), bgr)
+
+        print(f"✅ Saved {len(video_frames)} frames to `{out_dir}`")
 
         # Optionally delete all preoprocessing artifacts, once tracking is done (only keep cropped images)
         if self.config.delete_preprocessing:
@@ -1739,7 +1749,6 @@ class Tracker(object):
         print(f'''
                 <<<<<<<< DONE WITH TRACKING {self.actor_name} >>>>>>>>
                 ''')
-
 
 
 
