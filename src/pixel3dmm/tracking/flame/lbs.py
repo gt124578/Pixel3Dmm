@@ -208,8 +208,9 @@ def lbs(betas, pose, v_template, shapedirs, posedirs, J_regressor, parents,
     '''
 
     batch_size = max(betas.shape[0], pose.shape[0])
-    device = betas.device
 
+    device = betas.get_device()
+    
     # Add shape contribution
     v_shaped = v_template + blend_shapes(betas, shapedirs)
 
