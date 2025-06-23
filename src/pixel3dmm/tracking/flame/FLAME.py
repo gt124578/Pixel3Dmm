@@ -16,6 +16,8 @@
 
 import os
 import pickle
+from huggingface_hub import hf_hub_download
+from pixel3dmm import env_paths
 
 import numpy as np
 # Modified from smplx code for FLAME
@@ -66,7 +68,8 @@ class FLAME(nn.Module):
 
     def __init__(self, config):
         super(FLAME, self).__init__()
-        with open(f'{env_paths.FLAME_ASSETS}/FLAME2020/generic_model.pkl', 'rb') as f:
+
+        with open(f'{env_paths.FLAME_ASSET}', 'rb') as f:
             ss = pickle.load(f, encoding='latin1')
             flame_model = Struct(**ss)
 
@@ -100,7 +103,7 @@ class FLAME(nn.Module):
         self._register_default_params('expression_params', config.num_exp_params)
 
         # Static and Dynamic Landmark embeddings for FLAME
-        lmk_embeddings = np.load(f'{env_paths.FLAME_ASSETS}/FLAME2020/landmark_embedding.npy', allow_pickle=True, encoding='latin1')
+        lmk_embeddings = np.load(f'{env_paths.FLAME_MASK_ASSET}/FLAME2020/landmark_embedding.npy', allow_pickle=True, encoding='latin1')
         lmk_embeddings = lmk_embeddings[()]
 
 
