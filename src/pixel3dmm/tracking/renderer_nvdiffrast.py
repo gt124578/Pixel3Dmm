@@ -75,6 +75,7 @@ class NVDRenderer(nn.Module):
     def __init__(self, image_size, obj_filename, uv_size=512, flip=False,
                  no_sh : bool = False,
                  white_bg : bool = False,
+                  glctx=None,
                  ):
         super(NVDRenderer, self).__init__()
         #TODO path management
@@ -156,6 +157,7 @@ class NVDRenderer(nn.Module):
         self.no_sh = no_sh
         self.rast_out = None
         self.rast_out_db = None
+        self.glctx = glctx or dr.RasterizeCudaContext()
 
 
     def add_SHlight(self, normal_images, sh_coeff):
@@ -199,7 +201,7 @@ class NVDRenderer(nn.Module):
         pos_clips = transform_pos(r_mvps, vertices_world).float()
 
         if self.rast_out is None:
-            rast_out, rast_out_db = dr.rasterize(glctx, pos_clips, self.pos_idx,
+            rast_out, rast_out_db = dr.rasterize(self.glctx, pos_clips, self.pos_idx,
                                                  resolution=[self.image_size, self.image_size])
         else:
             rast_out = self.rast_out
