@@ -227,11 +227,13 @@ with gr.Blocks(css="#col-container {max-width: 1024px; margin: 0 auto;}") as dem
         
         with gr.Column(scale=2):
             mesh_file = gr.Model3D(label="3D Model Preview", height=512)
-            with gr.Row():
-                crop_img = gr.Image(label="1. Preprocessing", height=128)
-                normals_img = gr.Image(label="2. Normals", height=128)
-                uv_img = gr.Image(label="3. UV Map", height=128)
-                track_img = gr.Image(label="4. Tracking", height=128)
+            with gr.Blocks():
+                with gr.Row():
+                    crop_img = gr.Image(label="1. Prétraitement", height=256)
+                    normals_img = gr.Image(label="2. Normales", height=256)
+                with gr.Row():
+                    uv_img = gr.Image(label="3. Carte UV", height=256)
+                    track_img = gr.Image(label="4. Tracking", height=256)
 
     # Example images
     gr.Examples(
