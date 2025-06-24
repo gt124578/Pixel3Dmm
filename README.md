@@ -38,7 +38,7 @@ This guide details the steps to set up the project on a local Windows machine.
 1.  **Git:** Required to clone the repository. [Download here](https://git-scm.com/).
 2.  **Conda:** Anaconda or Miniconda is used for environment management. [Download Miniconda here](https://docs.conda.io/en/latest/miniconda.html).
 3.  **Microsoft C++ Build Tools:** Essential for compiling C++/Cython code.
-    -   Download the installer from the [Visual Studio website](https://visualstudio.microsoft.com/visual-studio-build-tools/).
+    -   Download the installer from the [Visual Studio website](https://visualstudio.microsoft.com/fr/downloads/).
     -   Run the installer and in the "Workloads" tab, check the box for **"Desktop development with C++"**.
 4.  **(Optional) NVIDIA GPU & Drivers:** ensure you have an NVIDIA GPU with up-to-date drivers.
 
@@ -117,6 +117,8 @@ This fork comes with a user-friendly web interface. To launch it, run:
 python app.py
 ```
 Open the local URL (e.g., `http://127.0.0.1:7860`) in your web browser, upload an image, and click "Start Reconstruction".
+
+Several models will be downloaded if you need to download them manually here is the repo with all the necessary models: [Hugging Face Repo Model](https://huggingface.co/alexnasa/pixel3dmm/tree/main)
 
 
 ---
