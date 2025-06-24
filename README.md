@@ -12,7 +12,7 @@ It includes necessary code patches, a detailed installation guide, and a fixed d
 
 Try Pixel3DMM directly in your browser without any installation:
 **[➡️ Live Demo on Hugging Face Spaces by alexnasa](https://huggingface.co/spaces/alexnasa/pixel3dmm)**
-
+This fork is based on this repository to create a local implementation.
 <br>
 
 ---
