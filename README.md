@@ -187,8 +187,6 @@ Please respect their individual licenses and cite them in any resulting publicat
     -   *Jin, Haibo, et al. "PIPNet: A Pixel-in-Pixel Net for 68-Point Landmark Detection." (2021).*
 
 
-## 4. License Information
-
 This fork is provided under the same license as the original Pixel3DMM project: [Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/).
 
 Please be aware that dependencies such as MICA, FLAME, and PIPNet are subject to their own licenses. By using this software, you agree to comply with all of them.
