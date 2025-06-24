@@ -1,4 +1,4 @@
-# Pixel3DMM[Image mode] (Windows-compatible Fork & Demo)
+# Pixel3DMM [Image mode] (Windows-compatible Fork & Demo)
 
 <div style="text-align: center">
 <img src="media/banner.gif" />
