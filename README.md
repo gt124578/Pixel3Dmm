@@ -116,7 +116,7 @@ This fork comes with a user-friendly web interface. To launch it, run:
 ```bash
 python app.py
 ```
-Open the local URL (e.g., `http://127.0.0.1:7860`) in your web browser, upload an image, and click "Lancer la Reconstruction".
+Open the local URL (e.g., `http://127.0.0.1:7860`) in your web browser, upload an image, and click "Start Reconstruction".
 
 
 ---
