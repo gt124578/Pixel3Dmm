@@ -237,8 +237,9 @@ with gr.Blocks(css="#col-container {max-width: 1024px; margin: 0 auto;}") as dem
     gr.Examples(
         examples=[
             os.path.join("example_images", "jennifer_lawrence.png"),
-            os.path.join("example_images", "brendan_fraser.png"),
-            os.path.join("example_images", "jim_carrey.png"),
+            os.path.join("example_images", "margaret_qualley.png"),
+            os.path.join("example_images", "sean_connery.jpg"),
+            os.path.join("example_images", "stallone.jpg")
         ],
         inputs=[image_in]
     )
