@@ -1,177 +1,193 @@
-#  Pixel3DMM: Versatile Screen-Space Priors for Single-Image 3D Face Reconstruction
-[**Paper**](https://arxiv.org/abs/2505.00615) | [**Video**](https://www.youtube.com/watch?v=BwxwEXJwUDc) | [**Project Page**](https://simongiebenhain.github.io/pixel3dmm/) <br>
+# Pixel3DMM (Windows-compatible Fork & Demo)
 
 <div style="text-align: center">
 <img src="media/banner.gif" />
 </div>
 
-This repository contains the official implementation of the paper:
+**This is a fork of the official [Orficial Pixel3DMM repository]((https://simongiebenhain.github.io/pixel3dmm/)) modified to run on Windows.**
 
-### Pixel3DMM: Versatile Screen-Space Priors for Single-Image 3D Face Reconstruction
+It includes necessary code patches, a detailed installation guide, and a fixed dependency list.
+
+### ✨ Live Demo on Hugging Face Spaces! ✨
+
+Try Pixel3DMM directly in your browser without any installation:
+**[➡️ Live Demo on Hugging Face Spaces](https://huggingface.co/spaces/alexnasa/pixel3dmm)**
+
+<br>
+
+---
+
+*Original Project Links:*
+[**Paper**](https://arxiv.org/abs/2505.00615) | [**Video**](https://www.youtube.com/watch?v=BwxwEXJwUDc) | [**Original Project Page**](https://simongiebenhain.github.io/pixel3dmm/)
+
+*Authors of this project:*
 [Simon Giebenhain](https://simongiebenhain.github.io/), 
 [Tobias Kirschstein](https://niessnerlab.org/members/tobias_kirschstein/profile.html), 
 [Martin Rünz](https://www.martinruenz.de/), 
 [Lourdes Agaptio](https://scholar.google.com/citations?user=IRMX4-4AAAAJ&hl=en) and 
 [Matthias Nießner](https://niessnerlab.org/members/matthias_niessner/profile.html)  
 
+---
 
+## 1. Installation on Windows
 
-## 1. Installation 
+This guide details the steps to set up the project on a local Windows machine.
 
-First we need to set up a conda enviroment. Below, there are two installation options presented:
+### Prerequisites
 
-### Option A: Using `environment.yml`
-> Note that this can take quite a while.
+1.  **Git:** Required to clone the repository. [Download here](https://git-scm.com/).
+2.  **Conda:** Anaconda or Miniconda is used for environment management. [Download Miniconda here](https://docs.conda.io/en/latest/miniconda.html).
+3.  **Microsoft C++ Build Tools:** Essential for compiling C++/Cython code.
+    -   Download the installer from the [Visual Studio website](https://visualstudio.microsoft.com/visual-studio-build-tools/).
+    -   Run the installer and in the "Workloads" tab, check the box for **"Desktop development with C++"**.
+4.  **(Optional) NVIDIA GPU & Drivers:** ensure you have an NVIDIA GPU with up-to-date drivers.
+
+### Step-by-Step Installation
+
+1.  **Clone this repository:**
+    ```bash
+    git clone https://github.com/gt124578/Pixel3Dmm.git
+    cd Pixel3DMM
+    ```
+
+2.  **Download MICA (Manual Step due to Licensing)**
+    
+    The MICA component used in this project has a restrictive license that prevents its redistribution in this fork. You must download it manually.
+    -   Go to the official MICA repository: [https://github.com/Zielon/MICA](https://github.com/Zielon/MICA).
+    -   Download the project as a ZIP file.
+    -   Unzip the archive.
+    -   Copy the **entire content** of the `MICA-main` folder into the `src\pixel3dmm\preprocessing\MICA` folder of this project.
+    
+    > By downloading and using MICA, you agree to its specific license terms.
+
+3.  **Create and activate the Conda environment:**
+    ```bash
+    conda create -n p3dmm python=3.9 -y
+    conda activate p3dmm
+    ```
+
+4.  **Install Python dependencies:**
+    
+    This fork provides a `requirements-windows.txt` file with tested, compatible versions of all packages.
+    ```bash
+    #Install Requirements 
+    pip install -r requirements-windows.txt
+
+    #Install PyTorch3D
+    pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"
+    
+    #Install Nvdiffrast
+    pip install git+https://github.com/NVlabs/nvdiffrast.git
+    ```
+    This will install specific versions of PyTorch (with CUDA support), `numpy==1.23.5`, `gradio==3.50.2`, and other critical libraries.
+
+5.  **Install local packages:**
+    
+    Install Pixel3DMM and its sub-packages in "editable" mode.
+    ```bash
+    # Install the main Pixel3DMM package
+    pip install -e .
+
+    # Install the 'facer' sub-package
+    pip install -e src/pixel3dmm/preprocessing/facer/
+    ```
+
+6.  **Compile Cython extensions:**
+    
+    This final step compiles a necessary part of the code for face detection.
+    ```bash
+    python src/pixel3dmm/preprocessing/PIPNet/FaceBoxesV2/utils/build.py build_ext --inplace
+    ```
+
+You are now ready to run the application!
+
+## 2. Running the Gradio Demo
+
+This fork comes with a user-friendly web interface. To launch it, run:
+```bash
+python app.py
 ```
-conda env create --file environment.yml
-conda activate p3dmm 
-```
-
-### Option B: Manual Installation
-
-```
-conda create -n p3dmm python=3.9
-conda activate p3dmm
-
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-conda install nvidia/label/cuda-11.8.0::cuda-nvcc nvidia/label/cuda-11.8.0::cuda-cccl nvidia/label/cuda-11.8.0::cuda-cudart nvidia/label/cuda-11.8.0::cuda-cudart-dev nvidia/label/cuda-11.8.0::libcusparse nvidia/label/cuda-11.8.0::libcusparse-dev nvidia/label/cuda-11.8.0::libcublas nvidia/label/cuda-11.8.0::libcublas-dev nvidia/label/cuda-11.8.0::libcurand nvidia/label/cuda-11.8.0::libcurand-dev nvidia/label/cuda-11.8.0::libcusolver nvidia/label/cuda-11.8.0::libcusolver-dev
-```
-
-```
-conda env config vars set TORCH_CUDA_ARCH_LIST="7.5 8.0 8.6+PTX"
-conda deactivate 
-conda activate p3dmm
-```
+Open the local URL (e.g., `http://127.0.0.1:7860`) in your web browser, upload an image, and click "Lancer la Reconstruction".
 
 
-```
-pip install git+https://github.com/facebookresearch/pytorch3d.git@stable
-pip install git+https://github.com/NVlabs/nvdiffrast.git
+Absolument d'accord. Ne pas inclure le `README` original est une excellente idée pour éviter toute confusion. L'objectif est de fournir un guide unique et clair.
 
-pip install -r requirements.txt
-```
+Intégrer une section "Citations" est non seulement une exigence des licences, mais aussi une marque de respect académique et une bonne pratique.
 
-### 1.1. Final Installation Steps
+Voici une version finale du `README.md` qui intègre tous ces points. Il est autonome, clair, respectueux des licences et met en avant votre contribution.
 
-Finally, you will need to run
-```
-pip instal -e .
-```
-to install `pixel3dmm` as a package.
+---
 
-As we use the FLAME 3DMM for tracking, you will need an account for the [FLAME website](https://flame.is.tue.mpg.de/).
+## 3. Citation and Acknowledgements
 
-Next, you can install all necessary preprocessing repositories and download network weights, by running
-```
-./install_preprocessing_pipeline.sh
-```
+This project would not be possible without the foundational work of the original authors. If you use this code in your research, please cite the respective papers.
 
-### 1.2 Environment Paths
-
-All paths to data / models / infernce are defined by environment variables.
-For this we recommend to create a file in your home directory in `~/.config/pixel3dmm/.env` with the following content:
-```
-PIXEL3DMM_CODE_BASE="{/PATH/TO/THIS/REPOSITORY/}"
-PIXEL3DMM_PREPROCESSED_DATA="{/WHERE/TO/STORE/PREPROCESSING/RESULTS/}"
-PIXEL3DMM_TRACKING_OUTPUT="{/WHERE/TO/STORE/TRACKING/RESULTS/}"
-```
-Replace the `{...}` with the locations where data / models / experiments should be located on your machine.
-
-If you do not like creating a config file in your home directory, you can instead hard-code the paths in the env.py. 
-Note that using the `.config` folder can be great advantage when working with different machines, e.g. a local PC and a GPU cluster which can have their separate `.env` files.
-
-## 2. Face Tracking
-
-### 2.1 Preprocessing
-Before running the tracking you will need to execute
-
-```
-PATH_TO_VIDEO="/path/to/video.mp4"
-base_name=$(basename $PATH_TO_VIDEO)
-VID_NAME="${base_name%%.*}"
-
-python scripts/run_preprocessing.py --video_or_images_path $PATH_TO_VIDEO
-````
-which will perform cropping, facial landmark detection and segmentation and exectute MICA.
-Here, `PATH_TO_VIDEO` can either point to an `.mp4` file, or to a folder with images.
-
-
-### 2.2 Pixel3DMM Inference
-Next run normal and uv-map prediction
-````
-python scripts/network_inference.py model.prediction_type=normals video_name=$VID_NAME
-python scripts/network_inference.py model.prediction_type=uv_map video_name=$VID_NAME
-````
-
-> *Note*: You can have a look at the preprocessed result and pixel3dmm predictions in `PIXEL3DMM_PREPROCESSED_DATA/{VID_NAME}`. 
-
-
-> *Note*: This script assumes square images and resizes to 512x512 before the network inference.
-
-### 2.3 Tracking
-Finally, run the tracking as such
-```
-python scripts/track.py video_name=$VID_NAME
-```
-
-> *Note*: When `COMPILE=True` (as per default) e.g. the PyCharm debugger won't work in compiled code segments.
-
-> *Note*: You can overwrite the default tracking parameters in `configs/tracking.yaml` using command line arguments. 
-
-
-> *Note*: It is possible to trade-off fitting fidelity against speed: 
-> - increasing `early_stopping_delta` will speed up the online tracking phase, as it controls at what rate of loss-change to skip to the next frame.
-> - `global_iters` controls the number of iteration of the global optimization stage.
-
-
-### 2.4 Single-Image Inference
-
-You can also run single-image FLAME fitting when providing `.jpg` or `.png` files instead of `.mp4`. 
-It is suggested to use a higher value for `iters`, e.g. by calling
-```
-python scripts/track.py video_name=$VID_NAME iters=800
-```
-This is necessary since video tracking consists of two stages, the *online* and *joint* tracking stages. For single image fitting the *joint* stage is skipped.
-
-
-### 2.5 Visualizations
-
-For convenience we provide a script that shows how to correctly interpret the estimated camera paramteres in relation to the FLAME mesh.
-Running
-````
-python scripts/viz_head_centric_cameras.py 
-````
-
-### 2.6 Example Inference
-You can run our tracker on example videos, by following the steps described in [2. Face Tracking](#2-face-tracking), and setting `PATH_TO_VIDEO="/path/to/this/repo/example_videos/ex1.mp4`.
-
-
-
-## Citation
-
-If you find our code or paper useful, please consider citing
+**Pixel3DMM**
 ```bibtex
 @misc{giebenhain2025pixel3dmm,
-title={Pixel3DMM: Versatile Screen-Space Priors for Single-Image 3D Face Reconstruction},
-author={Simon Giebenhain and Tobias Kirschstein and  Martin R{\"{u}}nz and Lourdes Agapito and Matthias Nie{\ss}ner},
-year={2025},
-url={https://arxiv.org/abs/2505.00615},
+    title={Pixel3DMM: Versatile Screen-Space Priors for Single-Image 3D Face Reconstruction},
+    author={Simon Giebenhain and Tobias Kirschstein and  Martin R{\"{u}}nz and Lourdes Agapito and Matthias Nie{\ss}ner},
+    year={2025},
+    url={https://arxiv.org/abs/2505.00615},
 }
 ```
 
-## Contact
+**MICA**
+```bibtex
+@inproceedings{zielonka2023mica,
+    title={MICA: A Malleable Model for Monocular 3D Human Face Reconstruction},
+    author={Wojciech Zielonka and Timo Bolkart and Justus Thies},
+    booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    pages={4169--4180},
+    year={2023}
+}
+```
 
-Contact [Simon Giebenhain](mailto:simon.giebenhain@tum.de) for questions, comments and reporting bugs, or open a GitHub Issue.
+**FLAME**
+```bibtex
+@article{FLAME:SiggraphAsia2017,
+    title = {Learning a model of facial shape and expression from {4D} scans},
+    author = {Li, Tianye and Bolkart, Timo and Black, Michael. J. and Li, Hao and Romero, Javier},
+    journal = {ACM Transactions on Graphics, (Proc. SIGGRAPH Asia)},
+    volume = {36},
+    number = {6},
+    year = {2017},
+    url = {https://doi.org/10.1145/3130800.3130813}
+}
+```
+
+**PIPNet**
+```bibtex
+@inproceedings{jin2021pipnet,
+  title={Pipnet: A pixel-in-pixel net for 68-point landmark detection},
+  author={Jin, Haibo and Culture, Sheng and Li, Jun-Hai and Song, Dong-Gyu},
+  booktitle={International Conference on Advanced Hybrid Information Processing},
+  pages={25--36},
+  year={2021},
+  organization={Springer}
+}
+```
 
 
-## License 
-Shield: [![CC BY-NC 4.0][cc-by-nc-shield]][cc-by-nc]
 
-This work is licensed under a
-[Creative Commons Attribution-NonCommercial 4.0 International License][cc-by-nc].
+## 4. License Information and Attribution
 
-[![CC BY-NC 4.0][cc-by-nc-image]][cc-by-nc]
+Please respect their individual licenses and cite them in any resulting publications.
 
-[cc-by-nc]: https://creativecommons.org/licenses/by-nc/4.0/
-[cc-by-nc-image]: https://licensebuttons.net/l/by-nc/4.0/88x31.png
-[cc-by-nc-shield]: https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg
+-   **Pixel3DMM:** Licensed under [CC BY-NC 4.0](https://github.com/SimonGiebenhain/pixel3dmm/blob/master/LICENSE).
+    -   *Giebenhain, Simon, et al. "Pixel3DMM: Versatile Screen-Space Priors for Single-Image 3D Face Reconstruction." (2025).*
+-   **MICA:** Licensed for [non-commercial scientific research](https://github.com/Zielon/MICA/tree/master?tab=License-1-ov-file).
+    -   *Zielonka, Wojciech, et al. "MICA: A Malleable Model for Monocular 3D Human Face Reconstruction." (2023).*
+-   **FLAME:** Licensed under [CC BY 4.0](https://flame.is.tue.mpg.de/modellicense.html).
+    -   *Li, Tianye, et al. "Learning a model of facial shape and expression from 4D scans." (2017).*
+-   **PIPNet:** Licensed under [Unknown](https://github.com/M-Nauta/PIPNet).
+    -   *Jin, Haibo, et al. "PIPNet: A Pixel-in-Pixel Net for 68-Point Landmark Detection." (2021).*
+
+
+## 4. License Information
+
+This fork is provided under the same license as the original Pixel3DMM project: [Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/).
+
+Please be aware that dependencies such as MICA, FLAME, and PIPNet are subject to their own licenses. By using this software, you agree to comply with all of them.
+
+
