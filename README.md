@@ -105,7 +105,10 @@ This guide details the steps to set up the project on a local Windows machine.
     
     This final step compiles a necessary part of the code for face detection.
     ```bash
-    python src/pixel3dmm/preprocessing/PIPNet/FaceBoxesV2/utils/build.py build_ext --inplace
+    pip install Cython
+    cd ./src/pixel3dmm/preprocessing/PIPNet/FaceBoxesV2/utils/
+    python build.py build_ext --inplace
+    cd ../../../../../../
     ```
 
 You are now ready to run the application!
