@@ -11,7 +11,7 @@ It includes necessary code patches, a detailed installation guide, and a fixed d
 ### ✨ Live Demo on Hugging Face Spaces! ✨
 
 Try Pixel3DMM directly in your browser without any installation:
-**[➡️ Live Demo on Hugging Face Spaces](https://huggingface.co/spaces/alexnasa/pixel3dmm)**
+**[➡️ Live Demo on Hugging Face Spaces by alexnasa](https://huggingface.co/spaces/alexnasa/pixel3dmm)**
 
 <br>
 
@@ -74,7 +74,7 @@ This guide details the steps to set up the project on a local Windows machine.
     pip install -r requirements-windows.txt
 
     #Install PyTorch3D
-    pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"
+    pip install git+https://github.com/facebookresearch/pytorch3d.git@stable
     
     #Install Nvdiffrast
     pip install git+https://github.com/NVlabs/nvdiffrast.git
