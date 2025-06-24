@@ -57,6 +57,7 @@ This guide details the steps to set up the project on a local Windows machine.
     -   Download the project as a ZIP file.
     -   Unzip the archive.
     -   Copy the **entire content** of the `MICA-main` folder into the `src\pixel3dmm\preprocessing\MICA` folder of this project.
+    -   Copy the **entire content** of the `MICA-modified` folder (locate in `src\pixel3dmm\preprocessing`) into the `src\pixel3dmm\preprocessing\MICA` folder.
     -   Download epoch59.pth in this [Hugging Face Repo](https://huggingface.co/alexnasa/pixel3dmm/tree/main) and put this one into the `src\pixel3dmm\preprocessing\PIPNet\snapshots\WFLW\pip_32_16_60_r18_l2_l1_10_1_nb10` folder
     
     > By downloading and using MICA, you agree to its specific license terms.
