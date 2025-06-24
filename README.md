@@ -1,4 +1,4 @@
-# Pixel3DMM (Windows-compatible Fork & Demo)
+# Pixel3DMM[Image mode] (Windows-compatible Fork & Demo)
 
 <div style="text-align: center">
 <img src="media/banner.gif" />
@@ -64,20 +64,29 @@ This guide details the steps to set up the project on a local Windows machine.
     ```bash
     conda create -n p3dmm python=3.9 -y
     conda activate p3dmm
+
+    pip --default-timeout=1000 install torch==2.7.1 torchvision==0.22.1 torchaudio==2.7.1 --index-url https://download.pytorch.org/whl/cu118
+    conda install nvidia/label/cuda-11.8.0::cuda-nvcc nvidia/label/cuda-11.8.0::cuda-cccl nvidia/label/cuda-11.8.0::cuda-cudart nvidia/label/cuda-11.8.0::cuda-cudart-dev nvidia/label/cuda-11.8.0::libcusparse nvidia/label/cuda-11.8.0::libcusparse-dev nvidia/label/cuda-11.8.0::libcublas nvidia/label/cuda-11.8.0::libcublas-dev nvidia/label/cuda-11.8.0::libcurand nvidia/label/cuda-11.8.0::libcurand-dev nvidia/label/cuda-11.8.0::libcusolver nvidia/label/cuda-11.8.0::libcusolver-dev
+    ```
+
+    ```bash
+    conda env config vars set TORCH_CUDA_ARCH_LIST="7.5 8.0 8.6+PTX"
+    conda deactivate 
+    conda activate p3dmm
     ```
 
 4.  **Install Python dependencies:**
     
     This fork provides a `requirements-windows.txt` file with tested, compatible versions of all packages.
     ```bash
-    #Install Requirements 
-    pip install -r requirements-windows.txt
-
     #Install PyTorch3D
-    pip install git+https://github.com/facebookresearch/pytorch3d.git@stable
+    pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"
     
     #Install Nvdiffrast
     pip install git+https://github.com/NVlabs/nvdiffrast.git
+    
+    #Install Requirements 
+    pip install -r requirements-windows.txt
     ```
     This will install specific versions of PyTorch (with CUDA support), `numpy==1.23.5`, `gradio==3.50.2`, and other critical libraries.
 
@@ -109,12 +118,6 @@ python app.py
 ```
 Open the local URL (e.g., `http://127.0.0.1:7860`) in your web browser, upload an image, and click "Lancer la Reconstruction".
 
-
-Absolument d'accord. Ne pas inclure le `README` original est une excellente idée pour éviter toute confusion. L'objectif est de fournir un guide unique et clair.
-
-Intégrer une section "Citations" est non seulement une exigence des licences, mais aussi une marque de respect académique et une bonne pratique.
-
-Voici une version finale du `README.md` qui intègre tous ces points. Il est autonome, clair, respectueux des licences et met en avant votre contribution.
 
 ---
 
