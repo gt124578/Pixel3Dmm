@@ -105,8 +105,8 @@ This guide details the steps to set up the project on a local Windows machine.
     
     This final step compiles a necessary part of the code for face detection.
     ```bash
-    pip install Cython
-    cd ./src/pixel3dmm/preprocessing/PIPNet/FaceBoxesV2/utils/
+    pip install Cython gradio==3.50.2 environs omegaconf trimesh pytorch_lightning einops distinctipy tyro
+    cd ./src/pixel3dmm/preprocessing/PIPNet/FaceBoxesV2/utils/            
     python build.py build_ext --inplace
     cd ../../../../../../
     ```
