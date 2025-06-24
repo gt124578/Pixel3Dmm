@@ -50,13 +50,14 @@ This guide details the steps to set up the project on a local Windows machine.
     cd Pixel3DMM
     ```
 
-2.  **Download MICA (Manual Step due to Licensing)**
+2.  **Download MICA and epoch59.pth (Manual Step due to Licensing)**
     
     The MICA component used in this project has a restrictive license that prevents its redistribution in this fork. You must download it manually.
     -   Go to the official MICA repository: [https://github.com/Zielon/MICA](https://github.com/Zielon/MICA).
     -   Download the project as a ZIP file.
     -   Unzip the archive.
     -   Copy the **entire content** of the `MICA-main` folder into the `src\pixel3dmm\preprocessing\MICA` folder of this project.
+    -   Download epoch59.pth in this [Hugging Face Repo](https://huggingface.co/alexnasa/pixel3dmm/tree/main) and put this one into the `src\pixel3dmm\preprocessing\PIPNet\snapshots\WFLW\pip_32_16_60_r18_l2_l1_10_1_nb10` folder
     
     > By downloading and using MICA, you agree to its specific license terms.
 
@@ -95,20 +96,22 @@ This guide details the steps to set up the project on a local Windows machine.
     Install Pixel3DMM and its sub-packages in "editable" mode.
     ```bash
     # Install the main Pixel3DMM package
-    pip install -e .
+    pip install --no-deps -e .
 
     # Install the 'facer' sub-package
-    pip install -e src/pixel3dmm/preprocessing/facer/
+    pip install --no-deps -e src/pixel3dmm/preprocessing/facer/
     ```
 
 6.  **Compile Cython extensions:**
     
     This final step compiles a necessary part of the code for face detection.
     ```bash
-    pip install Cython gradio==3.50.2 environs omegaconf trimesh pytorch_lightning einops distinctipy tyro
+    pip install Cython
     cd ./src/pixel3dmm/preprocessing/PIPNet/FaceBoxesV2/utils/            
     python build.py build_ext --inplace
     cd ../../../../../../
+    pip install -r requirements.txt
+    pip install gradio==3.50.2 trimesh
     ```
 
 You are now ready to run the application!
